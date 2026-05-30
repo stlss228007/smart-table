@@ -10,7 +10,7 @@ import { initSorting } from "./components/sorting.js";
 import { initFiltering } from "./components/filtering.js";
 import { initSearching } from "./components/searching.js";
 
-const api = initData(); // без аргумента
+const api = initData();
 
 function collectState(formElement) {
     const state = processFormData(new FormData(formElement));
@@ -20,18 +20,23 @@ function collectState(formElement) {
 }
 
 async function render(action) {
-    const form = sampleTable.container.closest('form');
-    let state = collectState(form);
-    let query = {};
+    try {
+        const form = sampleTable.container.closest('form');
+        let state = collectState(form);
+        let query = {};
 
-    query = applySearching(query, state, action);
-    query = applyFiltering(query, state, action);
-    query = applySorting(query, state, action);
-    query = applyPagination(query, state, action);
+        query = applySearching(query, state, action);
+        query = applyFiltering(query, state, action);
+        query = applySorting(query, state, action);
+        query = applyPagination(query, state, action);
 
-    const { total, items } = await api.getRecords(query);
-    updatePagination(total, query);
-    sampleTable.render(items);
+        const { total, items } = await api.getRecords(query);
+        updatePagination(total, query);
+        sampleTable.render(items);
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        alert('Не удалось загрузить данные. Пожалуйста, перезагрузите страницу.');
+    }
 }
 
 const sampleTable = initTable({
@@ -62,11 +67,16 @@ const appRoot = document.querySelector('#app');
 appRoot.appendChild(sampleTable.container);
 
 async function init() {
-    const indexes = await api.getIndexes();
-    updateIndexes(sampleTable.filter.elements, {
-        searchBySeller: indexes.sellers
-    });
-    render();
+    try {
+        const indexes = await api.getIndexes();
+        updateIndexes(sampleTable.filter.elements, {
+            searchBySeller: indexes.sellers
+        });
+        render();
+    } catch (error) {
+        console.error('Ошибка при инициализации:', error);
+        alert('Не удалось загрузить справочные данные. Пожалуйста, перезагрузите страницу.');
+    }
 }
 
 init();
