@@ -14,11 +14,13 @@ export function initFiltering(elements) {
 
     const applyFiltering = (query, state, action) => {
         if (action && action.name === 'clear') {
-            const parent = action.closest('fieldset');
-            const input = parent.querySelector('input, select');
-            if (input) {
-                input.value = '';
-                state[input.name] = '';
+            const fieldName = action.dataset.field; 
+            if (fieldName) {
+                const input = action.closest('form').querySelector(`[name="${fieldName}"]`);
+                if (input) {
+                    input.value = '';
+                    state[input.name] = '';
+                }
             }
         }
         const filter = {};
