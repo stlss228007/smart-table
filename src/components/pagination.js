@@ -3,7 +3,7 @@ import { getPages } from "../lib/utils.js";
 export const initPagination = ({ pages, fromRow, toRow, totalRows }, createPage) => {
     const pageTemplate = pages.firstElementChild.cloneNode(true);
     pages.firstElementChild.remove();
-    let pageCount = 1; // начальное значение
+    let pageCount = 1;
 
     const applyPagination = (query, state, action) => {
         const limit = state.rowsPerPage;
